@@ -9,11 +9,6 @@ public class FollowingCamera : MonoBehaviour
 
     private Quaternion _initialRotation;
 
-    private void Start()
-    {
-        
-    }
-
     private void Update()
     {
         _camera.transform.position = new Vector3(_target.transform.position.x, _target.transform.position.y + 2, -10);
