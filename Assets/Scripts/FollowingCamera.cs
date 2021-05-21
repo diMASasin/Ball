@@ -4,13 +4,11 @@ using UnityEngine;
 
 public class FollowingCamera : MonoBehaviour
 {
-    [SerializeField] private FollowingCamera _camera;
-    [SerializeField] private GameObject _target;
-
-    private Quaternion _initialRotation;
+    [SerializeField] private Transform _target;
+    [SerializeField] private Vector3 _offset = new Vector3(0, 2, -10);
 
     private void Update()
     {
-        _camera.transform.position = new Vector3(_target.transform.position.x, _target.transform.position.y + 2, -10);
+        Camera.main.transform.position = new Vector3(_target.position.x, _target.position.y, _target.position.z) + _offset;
     }
 }

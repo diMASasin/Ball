@@ -5,92 +5,75 @@ using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
 {
-    [SerializeField] private GridObject[] _templates;
-    [SerializeField] private float _cellSize;
+    [SerializeField] private GameObject _groundTemplate;
+    [SerializeField] private GridObject _barrierTemplate;
+    [SerializeField] private GridObject _coinTemplate;
     [SerializeField] private Player _player;
-    [SerializeField] private float _viewRadius;
+    [SerializeField] private int _spawnRadius;
 
-    private HashSet<Vector3Int> _collisionsMatrix = new HashSet<Vector3Int>();
+    private HashSet<Vector2Int> _occupiedPositions = new HashSet<Vector2Int>();
 
     private void Update()
     {
-        FillRadius(_player.transform.position, _viewRadius); 
+        GenerateLevelInRadius(_spawnRadius);
     }
 
-    private void FillRadius(Vector3 center, float radius)
+    private void GenerateLevelInRadius(int radius)
     {
-        var cellCount = (int)(radius / _cellSize);
-        var fillAreaCenter = WorldToGridPosition(center);
-
-        for (int x = -cellCount; x < cellCount; x++)
+        int playerX = (int)_player.transform.position.x;
+        for (int i = playerX; i < playerX + radius; i++)
         {
-
-            TryCreate(GridLayer.Ground, fillAreaCenter + new Vector3Int(x, 0, 0));
-
-            if (x != 0)
-                TryCreate(GridLayer.OnGround, fillAreaCenter + new Vector3Int(x, 0, 0));
+            GenerateGround(new Vector3(i, (float)GridLayer.Ground, 0));
+            if(i != playerX)
+                GenerateOnGround(new Vector3(i, (float)GridLayer.OnGround, 0));
         }
     }
 
-    private void TryCreate(GridLayer layer, Vector3Int gridPosition)
+    private void GenerateGround(Vector3 spawnPoint)
     {
-        gridPosition.y = (int)layer;
-
-        int sizeOfLine = Random.Range(1, 6);
-
-
-        if (_collisionsMatrix.Contains(gridPosition))
+        if (_occupiedPositions.Contains(WorldToGrid(spawnPoint)))
             return;
 
-        _collisionsMatrix.Add(gridPosition);
-
-        var template =  GetRandomTemplate(layer);
-
-        if (template == null)
-            return;
-
-        if(!template.TryGetComponent<Coin>(out Coin coin))
-            sizeOfLine = 1;
-
-        for (int i = 0; i < sizeOfLine; i++)
-        {
-            _collisionsMatrix.Add(gridPosition + new Vector3Int(i, 0, 0));
-            var position = GridToWorldPosition(gridPosition + new Vector3Int(i, 0, 0));
-            Instantiate(template, position, Quaternion.identity, transform);
-        }
+        _occupiedPositions.Add(WorldToGrid(spawnPoint));
+        Instantiate(_groundTemplate, spawnPoint, Quaternion.identity);
     }
 
-    private GridObject GetRandomTemplate(GridLayer layer)
+    private void GenerateOnGround(Vector3 spawnPoint)
     {
-        var variants = _templates.Where(template => template.Layer == layer);
+        if (_occupiedPositions.Contains(WorldToGrid(spawnPoint)))
+            return;
 
-        if (variants.Count() == 1)
-            return variants.First();
+        _occupiedPositions.Add(WorldToGrid(spawnPoint));
+        var randomTemplate = GetRandomTemplate();
 
-        foreach (var template in variants)
+        if (randomTemplate == null)
+            return;
+
+        Instantiate(randomTemplate, spawnPoint, Quaternion.identity);
+
+        if(randomTemplate.TryGetComponent<Coin>(out Coin coin))
         {
-            if(template.Chance > Random.Range(0, 100))
+            int randomNumberOfCoins = Random.Range(1, 5);
+            for (int i = 1; i < randomNumberOfCoins; i++)
             {
-                return template;
+                _occupiedPositions.Add(WorldToGrid(spawnPoint + new Vector3(i, 0, 0)));
+                Instantiate(randomTemplate, spawnPoint + new Vector3(i, 0, 0), Quaternion.identity);
             }
         }
 
+    }
+
+    private GridObject GetRandomTemplate()
+    {
+        if (_barrierTemplate.Chance >= Random.Range(1, 101))
+            return _barrierTemplate;
+        else if (_coinTemplate.Chance >= Random.Range(1, 101))
+            return _coinTemplate;
         return null;
     }
 
-    private Vector3 GridToWorldPosition(Vector3Int gridPosition)
+    private Vector2Int WorldToGrid(Vector3 vector)
     {
-        return new Vector3(
-            gridPosition.x / _cellSize,
-            gridPosition.y / _cellSize,
-            gridPosition.z / _cellSize);
-    }
-
-    private Vector3Int WorldToGridPosition(Vector3 worldPosition)
-    {
-        return new Vector3Int(
-            (int)(worldPosition.x / _cellSize),
-            (int)(worldPosition.y / _cellSize),
-            (int)(worldPosition.z / _cellSize));
+        return new Vector2Int((int)vector.x, (int)vector.y);
     }
 }

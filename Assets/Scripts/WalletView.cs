@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CollectedCoinsView : MonoBehaviour
+public class WalletView : MonoBehaviour
 {
     [SerializeField] private Text _text;
     [SerializeField] private Player _player;
-
 
     private void OnEnable()
     {
