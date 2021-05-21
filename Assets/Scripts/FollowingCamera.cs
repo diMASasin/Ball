@@ -9,6 +9,6 @@ public class FollowingCamera : MonoBehaviour
 
     private void Update()
     {
-        Camera.main.transform.position = new Vector3(_target.position.x, _target.position.y, _target.position.z) + _offset;
+        Camera.main.transform.position = _target.position + _offset;
     }
 }
