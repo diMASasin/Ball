@@ -481,9 +481,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3ac216b24bfe204f93527a7414509aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _groundTemplate: {fileID: 7022758503507776906, guid: 4a3645d8711111f4290ae8723653cdc8, type: 3}
-  _barrierTemplate: {fileID: 5332338624814632031, guid: 8049957d2fd930c44ac0ea2d237cbefa, type: 3}
-  _coinTemplate: {fileID: -6800213057515572995, guid: 8645a0f5dbe846a4bae22a67d2144035, type: 3}
+  _templates:
+  - {fileID: -2994769196843858608, guid: 4a3645d8711111f4290ae8723653cdc8, type: 3}
+  - {fileID: 5332338624814632031, guid: 8049957d2fd930c44ac0ea2d237cbefa, type: 3}
+  - {fileID: -6800213057515572995, guid: 8645a0f5dbe846a4bae22a67d2144035, type: 3}
   _player: {fileID: 1305435645}
   _spawnRadius: 10
 --- !u!4 &927318971
@@ -628,6 +629,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _velocityModifier: 5
   _jumpForce: 5
+  _groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  _collider: {fileID: 1305435640}
 --- !u!114 &1305435645
 MonoBehaviour:
   m_ObjectHideFlags: 0

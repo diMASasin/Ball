@@ -5,9 +5,7 @@ using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
 {
-    [SerializeField] private GameObject _groundTemplate;
-    [SerializeField] private GridObject _barrierTemplate;
-    [SerializeField] private GridObject _coinTemplate;
+    [SerializeField] private GridObject[] _templates;
     [SerializeField] private Player _player;
     [SerializeField] private int _spawnRadius;
 
@@ -23,53 +21,50 @@ public class LevelGenerator : MonoBehaviour
         int playerX = (int)_player.transform.position.x;
         for (int i = playerX; i < playerX + radius; i++)
         {
-            GenerateGround(new Vector3(i, (float)GridLayer.Ground, 0));
+            GenerateGridObject(new Vector3(i, (float)GridLayer.Ground, 0));
             if(i != playerX)
-                GenerateOnGround(new Vector3(i, (float)GridLayer.OnGround, 0));
+                GenerateGridObject(new Vector3(i, (float)GridLayer.OnGround, 0));
         }
     }
 
-    private void GenerateGround(Vector3 spawnPoint)
+    private void GenerateGridObject(Vector3 spawnPoint)
     {
         if (_occupiedPositions.Contains(WorldToGrid(spawnPoint)))
             return;
 
         _occupiedPositions.Add(WorldToGrid(spawnPoint));
-        Instantiate(_groundTemplate, spawnPoint, Quaternion.identity);
-    }
 
-    private void GenerateOnGround(Vector3 spawnPoint)
-    {
-        if (_occupiedPositions.Contains(WorldToGrid(spawnPoint)))
+        int templateIndex;
+        if (spawnPoint.y == (float)GridLayer.Ground)
+            templateIndex = 0;
+        else
+            templateIndex = GetRandomTemplateIndex();
+
+        if (templateIndex < 0 || templateIndex >= _templates.Length)
             return;
 
-        _occupiedPositions.Add(WorldToGrid(spawnPoint));
-        var randomTemplate = GetRandomTemplate();
+        Instantiate(_templates[templateIndex], spawnPoint, Quaternion.identity);
 
-        if (randomTemplate == null)
-            return;
-
-        Instantiate(randomTemplate, spawnPoint, Quaternion.identity);
-
-        if(randomTemplate.TryGetComponent<Coin>(out Coin coin))
+        if(templateIndex == 2)
         {
-            int randomNumberOfCoins = Random.Range(1, 5);
-            for (int i = 1; i < randomNumberOfCoins; i++)
+            int numberOfCoins = Random.Range(1, 5);
+            for (int i = 1; i < numberOfCoins; i++)
             {
                 _occupiedPositions.Add(WorldToGrid(spawnPoint + new Vector3(i, 0, 0)));
-                Instantiate(randomTemplate, spawnPoint + new Vector3(i, 0, 0), Quaternion.identity);
+                Instantiate(_templates[templateIndex], spawnPoint + new Vector3(i, 0, 0), Quaternion.identity);
             }
         }
 
     }
 
-    private GridObject GetRandomTemplate()
+    private int GetRandomTemplateIndex()
     {
-        if (_barrierTemplate.Chance >= Random.Range(1, 101))
-            return _barrierTemplate;
-        else if (_coinTemplate.Chance >= Random.Range(1, 101))
-            return _coinTemplate;
-        return null;
+        for (int i = 1; i < _templates.Length; i++)
+        {
+            if (_templates[i].Chance >= Random.Range(1, 101))
+                return i;
+        }
+        return -1;
     }
 
     private Vector2Int WorldToGrid(Vector3 vector)
