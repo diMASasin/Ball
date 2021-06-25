@@ -13,12 +13,11 @@ public class LevelGenerator : MonoBehaviour
 
     private void Update()
     {
-        GenerateLevelInRadius(_spawnRadius);
+        GenerateLevelInRadius(_spawnRadius, (int)_player.transform.position.x);
     }
 
-    private void GenerateLevelInRadius(int radius)
+    private void GenerateLevelInRadius(int radius, int playerX)
     {
-        int playerX = (int)_player.transform.position.x;
         for (int i = playerX; i < playerX + radius; i++)
         {
             GenerateGridObject(new Vector3(i, (float)GridLayer.Ground, 0));
@@ -34,27 +33,33 @@ public class LevelGenerator : MonoBehaviour
 
         _occupiedPositions.Add(WorldToGrid(spawnPoint));
 
-        int templateIndex;
-        if (spawnPoint.y == (float)GridLayer.Ground)
-            templateIndex = 0;
-        else
-            templateIndex = GetRandomTemplateIndex();
-
-        if (templateIndex < 0 || templateIndex >= _templates.Length)
+        int templateIndex = GetTemplateIndex(spawnPoint);
+        if (templateIndex < 0)
             return;
 
-        Instantiate(_templates[templateIndex], spawnPoint, Quaternion.identity);
+        int numberOfCoins = GetNumberOfCoins(templateIndex);
 
-        if(templateIndex == 2)
+        for (int i = 0; i < numberOfCoins; i++)
         {
-            int numberOfCoins = Random.Range(1, 5);
-            for (int i = 1; i < numberOfCoins; i++)
-            {
-                _occupiedPositions.Add(WorldToGrid(spawnPoint + new Vector3(i, 0, 0)));
-                Instantiate(_templates[templateIndex], spawnPoint + new Vector3(i, 0, 0), Quaternion.identity);
-            }
+            _occupiedPositions.Add(WorldToGrid(spawnPoint + new Vector3(i, 0, 0)));
+            Instantiate(_templates[templateIndex], spawnPoint + new Vector3(i, 0, 0), Quaternion.identity);
         }
+    }
 
+    private int GetNumberOfCoins(int templateIndex)
+    {
+        if (templateIndex == 2)
+            return Random.Range(1, 5);
+        else
+            return 1;
+    }
+
+    private int GetTemplateIndex(Vector3 spawnPoint)
+    {
+        if (spawnPoint.y == (float)GridLayer.Ground)
+            return 0;
+        else
+            return GetRandomTemplateIndex();
     }
 
     private int GetRandomTemplateIndex()

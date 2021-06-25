@@ -28,7 +28,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _grounded = Physics.SphereCast(new Vector3(transform.position.x, 0.01f + transform.position.y, transform.position.z), transform.localScale.x / 2, Vector3.down, out RaycastHit hit, 0.02f);
+        Vector3 origin = new Vector3(transform.position.x, 0.01f + transform.position.y, transform.position.z);
+        _grounded = Physics.SphereCast(origin, transform.localScale.x / 2, Vector3.down, out RaycastHit hit, 0.02f);
         _rigidbody.position += _targetVelocity * _velocityModifier * Time.deltaTime;
     }
 }
