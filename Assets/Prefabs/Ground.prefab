@@ -109,3 +109,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _chance: 100
+  _quantity: 1
+  _gridLayer: 0

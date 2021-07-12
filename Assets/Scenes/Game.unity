@@ -482,9 +482,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _templates:
+  - {fileID: -6800213057515572995, guid: 8645a0f5dbe846a4bae22a67d2144035, type: 3}
   - {fileID: -2994769196843858608, guid: 4a3645d8711111f4290ae8723653cdc8, type: 3}
   - {fileID: 5332338624814632031, guid: 8049957d2fd930c44ac0ea2d237cbefa, type: 3}
-  - {fileID: -6800213057515572995, guid: 8645a0f5dbe846a4bae22a67d2144035, type: 3}
   _player: {fileID: 1305435645}
   _spawnRadius: 10
 --- !u!4 &927318971

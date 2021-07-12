@@ -37,36 +37,18 @@ public class LevelGenerator : MonoBehaviour
         if (templateIndex < 0)
             return;
 
-        int numberOfCoins = GetNumberOfCoins(templateIndex);
-
-        for (int i = 0; i < numberOfCoins; i++)
+        for (int i = 0; i < _templates[templateIndex].Quantity; i++)
         {
             _occupiedPositions.Add(WorldToGrid(spawnPoint + new Vector3(i, 0, 0)));
             Instantiate(_templates[templateIndex], spawnPoint + new Vector3(i, 0, 0), Quaternion.identity);
         }
     }
 
-    private int GetNumberOfCoins(int templateIndex)
-    {
-        if (templateIndex == 2)
-            return Random.Range(1, 5);
-        else
-            return 1;
-    }
-
     private int GetTemplateIndex(Vector3 spawnPoint)
     {
-        if (spawnPoint.y == (float)GridLayer.Ground)
-            return 0;
-        else
-            return GetRandomTemplateIndex();
-    }
-
-    private int GetRandomTemplateIndex()
-    {
-        for (int i = 1; i < _templates.Length; i++)
+        for (int i = 0; i < _templates.Length; i++)
         {
-            if (_templates[i].Chance >= Random.Range(1, 101))
+            if (_templates[i].Chance >= Random.Range(1, 101) && spawnPoint.y == (float)_templates[i].GridLayer)
                 return i;
         }
         return -1;

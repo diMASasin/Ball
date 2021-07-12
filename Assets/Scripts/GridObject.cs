@@ -5,8 +5,12 @@ using UnityEngine;
 public class GridObject : MonoBehaviour
 {
     [SerializeField] private int _chance;
+    [SerializeField] private int _quantity = 1;
+    [SerializeField] private GridLayer _gridLayer;
 
+    public int Quantity => _quantity;
     public int Chance => _chance;
+    public GridLayer GridLayer => _gridLayer;
 
     private void OnValidate()
     {
